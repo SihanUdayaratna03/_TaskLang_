@@ -14,6 +14,7 @@ DIGIT       [0-9]
 LETTER      [a-zA-Z]
 IDENTIFIER  {LETTER}({LETTER}|{DIGIT}|_)*
 STRING      \"[^\"]*\"
+TIME        {DIGIT}{DIGIT}:{DIGIT}{DIGIT}
 
 %%
 
@@ -34,5 +35,14 @@ STRING      \"[^\"]*\"
 
 {IDENTIFIER}    { yylval.string = strdup(yytext); return IDENTIFIER; }
 {STRING}        { char *str = malloc(strlen(yytext)-1); strncpy(str, yytext+1, strlen(yytext)-2); str[strlen(yytext)-2]='\0'; yylval.string = str; return STRING_LITERAL; }
+{TIME}          { yylval.string = strdup(yytext); return TIME; }
+
+"MONDAY"        { yylval.string = strdup(yytext); return WEEKDAY; }
+"TUESDAY"       { yylval.string = strdup(yytext); return WEEKDAY; }
+"WEDNESDAY"     { yylval.string = strdup(yytext); return WEEKDAY; }
+"THURSDAY"      { yylval.string = strdup(yytext); return WEEKDAY; }
+"FRIDAY"        { yylval.string = strdup(yytext); return WEEKDAY; }
+"SATURDAY"      { yylval.string = strdup(yytext); return WEEKDAY; }
+"SUNDAY"        { yylval.string = strdup(yytext); return WEEKDAY; }
 
 %%
