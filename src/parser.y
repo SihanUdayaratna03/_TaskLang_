@@ -21,11 +21,26 @@ TaskList *root_list = NULL;
 %token <string> IDENTIFIER STRING_LITERAL TIME WEEKDAY
 %token <number> NUMBER
 
-%type <task> task_definition
-%type <task_list> program
+%type <task> task_definition task_body
+%type <task_list> program task_list
 
 %%
-program: /* empty for now */ ;
+program:
+    task_list { root_list = $1; }
+;
+
+task_list:
+    task_definition { $$ = create_task_list(); append_task($$, $1); }
+  | task_list task_definition { append_task($1, $2); $$ = $1; }
+;
+
+task_definition:
+    TASK IDENTIFIER LBRACE task_body RBRACE { $$ = $4; $$->name = $2; }
+;
+
+task_body:
+    { $$ = create_task("dummy"); }
+;
 %%
 
 void yyerror(const char *s) {
