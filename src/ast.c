@@ -11,7 +11,7 @@ TaskList* create_task_list() {
 
 Task* create_task(char *name) {
     Task *task = (Task*)malloc(sizeof(Task));
-    task->name = strdup(name);
+    task->name = name ? strdup(name) : NULL;
     task->script = NULL;
     task->has_condition = 0;
     task->schedule.time = NULL;

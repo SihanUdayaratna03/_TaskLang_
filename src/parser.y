@@ -21,7 +21,7 @@ TaskList *root_list = NULL;
 %token <string> IDENTIFIER STRING_LITERAL TIME WEEKDAY
 %token <number> NUMBER
 
-%type <task> task_definition task_body schedule_spec
+%type <task> task_definition task_body schedule_spec condition_spec
 %type <task_list> program task_list
 
 %%
@@ -40,12 +40,18 @@ task_definition:
 
 task_body:
     RUN STRING_LITERAL SEMICOLON schedule_spec { $$ = $4; $$->script = $2; }
+  | RUN STRING_LITERAL SEMICOLON schedule_spec condition_spec { $$ = $4; $$->script = $2; $$->has_condition = 1; }
 ;
 
 schedule_spec:
     EVERY DAY AT TIME SEMICOLON { $$ = create_task(NULL); $$->schedule.type = SCHED_DAILY; $$->schedule.time = $4; }
   | EVERY WEEK ON WEEKDAY AT TIME SEMICOLON { $$ = create_task(NULL); $$->schedule.type = SCHED_WEEKLY; $$->schedule.weekday = $4; $$->schedule.time = $6; }
   | AT TIME SEMICOLON { $$ = create_task(NULL); $$->schedule.type = SCHED_TIMED; $$->schedule.time = $2; }
+  | AFTER IDENTIFIER SEMICOLON { $$ = create_task(NULL); $$->schedule.type = SCHED_AFTER; $$->schedule.depends_on = $2; }
+;
+
+condition_spec:
+    IF SUCCESS SEMICOLON { $$ = NULL; }
 ;
 %%
 
