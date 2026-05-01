@@ -50,4 +50,6 @@ WHITESPACE  [ \t]
 "SATURDAY"      { yylval.string = strdup(yytext); return WEEKDAY; }
 "SUNDAY"        { yylval.string = strdup(yytext); return WEEKDAY; }
 
+.               { fprintf(stderr, "Lexical Error at line %d: Unrecognized character '%c'\n", line_number, yytext[0]); exit(1); }
+
 %%
