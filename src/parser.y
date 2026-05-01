@@ -39,7 +39,7 @@ task_definition:
 ;
 
 task_body:
-    { $$ = create_task("dummy"); }
+    RUN STRING_LITERAL SEMICOLON { $$ = create_task(NULL); $$->script = $2; }
 ;
 %%
 
