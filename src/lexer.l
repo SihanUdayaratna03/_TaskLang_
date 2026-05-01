@@ -15,8 +15,13 @@ LETTER      [a-zA-Z]
 IDENTIFIER  {LETTER}({LETTER}|{DIGIT}|_)*
 STRING      \"[^\"]*\"
 TIME        {DIGIT}{DIGIT}:{DIGIT}{DIGIT}
+WHITESPACE  [ \t]
 
 %%
+
+{WHITESPACE}+   { }
+\n              { line_number++; }
+"//".*          { }
 
 "TASK"      { return TASK; }
 "RUN"       { return RUN; }
