@@ -10,6 +10,11 @@ void yyerror(const char *s);
 
 %option noyywrap
 
+DIGIT       [0-9]
+LETTER      [a-zA-Z]
+IDENTIFIER  {LETTER}({LETTER}|{DIGIT}|_)*
+STRING      \"[^\"]*\"
+
 %%
 
 "TASK"      { return TASK; }
@@ -26,5 +31,8 @@ void yyerror(const char *s);
 "{"         { return LBRACE; }
 "}"         { return RBRACE; }
 ";"         { return SEMICOLON; }
+
+{IDENTIFIER}    { yylval.string = strdup(yytext); return IDENTIFIER; }
+{STRING}        { char *str = malloc(strlen(yytext)-1); strncpy(str, yytext+1, strlen(yytext)-2); str[strlen(yytext)-2]='\0'; yylval.string = str; return STRING_LITERAL; }
 
 %%
