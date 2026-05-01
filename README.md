@@ -1,170 +1,171 @@
 # TaskLang++
 
-> A Domain-Specific Language (DSL) for Task Scheduling and Automation
+**A Domain-Specific Language (DSL) for Task Scheduling and Automation**
 
-**Student:** IT24103532 — H.S.S Udayaratna  
-**Course:** SE2052 — Programming Paradigms  
-**Program:** BSc (Hons) in Computer Science — Year 2, Semester 2  
-**Deadline:** 04-05-2026
+*SE2052 – Programming Paradigms | Y2 S2 – BSc (Hons) in Computer Science*
+*Student: IT24103532 – H.S.S Udayaratna*
 
 ---
 
-## What is TaskLang++?
+## Overview
 
-TaskLang++ is a mini programming language (compiler) that lets you define scheduled tasks using simple, readable syntax — instead of writing complex scripts or cron jobs.
+TaskLang++ is a domain-specific language (DSL) and compiler designed to simplify task scheduling and automation. Instead of writing complex cron jobs or verbose scripts, users define tasks in a clean, readable, natural-language-like syntax. The compiler reads `.task` files, validates them through lexical, syntactic, and semantic analysis, and outputs an execution plan.
 
-You write a `.task` file like this:
+### Why TaskLang++?
 
-```
-TASK dailyReport {
-  RUN "report.py";
-  EVERY DAY AT 06:00;
-}
-```
-
-And the compiler reads it, validates it, and prints the execution plan.
+Modern systems rely heavily on task scheduling — from CI/CD pipelines and cron jobs to smart assistants. General-purpose languages can express these, but they are verbose and error-prone. TaskLang++ makes scheduling **declarative, readable, and safe**.
 
 ---
 
-## How It Works
+## DSL Scope
 
-```
-Your .task file
-      │
-      ▼
-   Lexer (lexer.l)          — breaks text into tokens
-      │
-      ▼
-   Parser (parser.y)        — checks grammar rules
-      │
-      ▼
-   AST Builder (ast.c)      — builds a tree structure
-      │
-      ▼
-   Semantic Validator        — checks for logic errors
-   (semantic.c)
-      │
-      ▼
-   Executor (executor.c)    — prints the output
-```
+### Supported Task Types
+- **Script execution** – Run any shell script or Python file
+- **Daily recurring** – Run every day at a specific time
+- **Weekly recurring** – Run every week on a specific day and time
+- **One-time timed** – Run once at a specific time
+- **Dependency-based** – Run after another task completes
+- **Conditional** – Run only if a condition (e.g., success) is met
 
----
+### Scheduling Mechanisms
+| Mechanism     | Syntax Example                        | Description                        |
+|---------------|---------------------------------------|------------------------------------|
+| Daily         | `EVERY DAY AT 06:00`                  | Recurring daily at a fixed time    |
+| Weekly        | `EVERY WEEK ON MONDAY AT 08:00`       | Recurring weekly on a specific day |
+| Timed         | `AT 15:30`                            | One-time execution at a set time   |
+| After (dep.)  | `AFTER backupDB`                      | Runs after another task finishes   |
+| Conditional   | `IF success`                          | Runs only if the dependency passed |
 
-## Project Structure
-
-```
-TaskLang++/
-├── src/
-│   ├── lexer.l         # Tokenizes input using Flex
-│   ├── parser.y        # Grammar rules using Bison
-│   ├── ast.h           # Task data structure definitions
-│   ├── ast.c           # Task data structure implementation
-│   ├── semantic.h      # Semantic checker header
-│   ├── semantic.c      # Error detection logic
-│   ├── executor.h      # Executor header
-│   ├── executor.c      # Prints execution output
-│   └── main.c          # Entry point
-│
-├── examples/
-│   ├── simple_daily.task
-│   ├── workflow.task
-│   ├── conditions.task
-│   ├── complex.task
-│   └── error_examples/
-│       ├── circular_deps.task
-│       ├── duplicate_task.task
-│       ├── invalid_syntax.task
-│       ├── undefined_task.task
-│       └── type_error.task
-│
-├── build.sh            # Linux/WSL build script
-├── clean.sh            # Removes build artifacts
-├── Makefile            # Alternative build method
-├── REPORT.md           # Academic report
-└── README.md           # This file
-```
+### Constraints & Assumptions
+- Task names must be unique across the file
+- Task names must start with a letter and may contain letters, digits, or underscores
+- The `RUN` argument must always be a string literal (in double quotes)
+- Time must follow `HH:MM` format (24-hour clock)
+- `IF` conditions can only follow an `AFTER` dependency
+- Circular dependencies between tasks are **not allowed**
 
 ---
 
-## Prerequisites
+## Token Table
 
-| Tool | Purpose |
-|------|---------|
-| GCC | C compiler |
-| Flex | Lexer generator |
-| Bison | Parser generator |
-
-**Install on Linux/WSL (Ubuntu):**
-```bash
-sudo apt install -y gcc flex bison make
-```
+| Token Name     | Lexeme         | Description                              |
+|----------------|----------------|------------------------------------------|
+| `TASK`         | `TASK`         | Begins a task definition block           |
+| `RUN`          | `RUN`          | Specifies the command/script to execute  |
+| `EVERY`        | `EVERY`        | Recurring schedule keyword               |
+| `DAY`          | `DAY`          | Used with EVERY for daily schedules      |
+| `WEEK`         | `WEEK`         | Used with EVERY for weekly schedules     |
+| `ON`           | `ON`           | Day specifier for weekly schedules       |
+| `AT`           | `AT`           | Time specification keyword               |
+| `AFTER`        | `AFTER`        | Dependency specification                 |
+| `IF`           | `IF`           | Conditional execution keyword            |
+| `SUCCESS`      | `success`      | Condition keyword (lowercase)            |
+| `WEEKDAY`      | `MONDAY`...    | Day of week (MON–SUN)                    |
+| `IDENTIFIER`   | `[a-zA-Z_][a-zA-Z0-9_]*` | Task name or variable        |
+| `STRING_LITERAL` | `"..."`      | Quoted string (script/command path)      |
+| `TIME`         | `HH:MM`        | 24-hour time literal                     |
+| `NUMBER`       | `[0-9]+`       | Integer literal                          |
+| `LBRACE`       | `{`            | Opens a task body                        |
+| `RBRACE`       | `}`            | Closes a task body                       |
+| `SEMICOLON`    | `;`            | Statement terminator                     |
 
 ---
 
-## Build & Run
+## Formal Grammar (EBNF)
 
-**Step 1 — Build the compiler:**
-```bash
-./build.sh
-```
+```ebnf
+program         = { task_definition } ;
 
-**Step 2 — Run a task file:**
-```bash
-./tasklang examples/simple_daily.task
-```
+task_definition = "TASK" identifier "{" task_body "}" ;
 
-**Step 3 — Test error detection:**
-```bash
-./tasklang examples/error_examples/circular_deps.task
-```
+task_body       = run_statement
+                  schedule_spec
+                  [ condition_spec ] ;
 
-**Clean build artifacts:**
-```bash
-./clean.sh
+run_statement   = "RUN" string_literal ";" ;
+
+schedule_spec   = daily_schedule
+                | weekly_schedule
+                | timed_schedule
+                | after_schedule ;
+
+daily_schedule  = "EVERY" "DAY" "AT" time ";" ;
+
+weekly_schedule = "EVERY" "WEEK" "ON" weekday "AT" time ";" ;
+
+timed_schedule  = "AT" time ";" ;
+
+after_schedule  = "AFTER" identifier ";" ;
+
+condition_spec  = "IF" condition ";" ;
+
+condition       = "success" ;
+
+time            = digit digit ":" digit digit ;
+
+weekday         = "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY"
+                | "FRIDAY" | "SATURDAY" | "SUNDAY" ;
+
+identifier      = letter { letter | digit | "_" } ;
+
+string_literal  = '"' { character } '"' ;
+
+digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+letter          = "a" | ... | "z" | "A" | ... | "Z" ;
 ```
 
 ---
 
-## Language Syntax
+## Compiler Architecture
 
-### Task Definition
 ```
-TASK taskName {
-  RUN "script_or_command";
-  scheduling_specification;
-  [optional_condition];
-}
+  .task Source File
+        │
+        ▼
+  ┌─────────────┐
+  │  Lexer      │  lexer.l   — Tokenizes input using Flex regular expressions
+  │  (Flex)     │
+  └──────┬──────┘
+         │  token stream
+         ▼
+  ┌─────────────┐
+  │  Parser     │  parser.y  — Validates grammar using Bison LALR(1) parsing
+  │  (Bison)    │
+  └──────┬──────┘
+         │  parse tree
+         ▼
+  ┌─────────────┐
+  │  AST        │  ast.c/h   — Builds structured in-memory tree of the program
+  │  Builder    │
+  └──────┬──────┘
+         │  AST
+         ▼
+  ┌─────────────┐
+  │  Semantic   │  semantic.c/h — Validates logic: duplicates, undefined refs,
+  │  Validator  │                 type errors, circular dependencies
+  └──────┬──────┘
+         │  validated AST
+         ▼
+  ┌─────────────┐
+  │  Execution  │  executor.c/h — Resolves dependencies and prints execution plan
+  │  Engine     │
+  └─────────────┘
 ```
-
-### Scheduling Options
-
-| Type | Syntax | Example |
-|------|--------|---------|
-| Daily | `EVERY DAY AT HH:MM;` | `EVERY DAY AT 06:00;` |
-| Weekly | `EVERY WEEK ON DAY AT HH:MM;` | `EVERY WEEK ON SUNDAY AT 03:00;` |
-| One-time | `AT HH:MM;` | `AT 15:30;` |
-| After task | `AFTER taskName;` | `AFTER backupDB;` |
-
-### Condition
-```
-IF success;
-```
-Makes the task run only if the dependency completed successfully.
-
-### Days of the Week
-`MONDAY` `TUESDAY` `WEDNESDAY` `THURSDAY` `FRIDAY` `SATURDAY` `SUNDAY`
 
 ---
 
-## Examples
+## Example Programs
 
 ### 1. Simple Daily Task
+
 ```
 TASK dailyReport {
-  RUN "report.py";
-  EVERY DAY AT 06:00;
+    RUN "report.py";
+    EVERY DAY AT 06:00;
 }
 ```
+
 **Output:**
 ```
 Parsing TaskLang++ input...
@@ -177,26 +178,26 @@ Executing Task: dailyReport
 --- EXECUTION COMPLETE ---
 ```
 
----
+### 2. Multi-Step Workflow with Dependencies
 
-### 2. Workflow with Dependencies
 ```
 TASK backupDB {
-  RUN "backup.sh";
-  EVERY DAY AT 02:00;
+    RUN "backup.sh";
+    EVERY DAY AT 02:00;
 }
 
 TASK sendReport {
-  RUN "report.py";
-  AFTER backupDB;
-  IF success;
+    RUN "report.py";
+    AFTER backupDB;
+    IF success;
 }
 
 TASK cleanup {
-  RUN "cleanup.sh";
-  EVERY WEEK ON SUNDAY AT 03:00;
+    RUN "cleanup.sh";
+    EVERY WEEK ON SUNDAY AT 03:00;
 }
 ```
+
 **Output:**
 ```
 Parsing TaskLang++ input...
@@ -221,172 +222,91 @@ Executing Task: cleanup
 
 ---
 
-### 3. Chained Conditions
+## Project Structure
+
 ```
-TASK preprocess {
-  RUN "preprocess.py";
-  AT 08:00;
-}
-
-TASK analyze {
-  RUN "analyze.py";
-  AFTER preprocess;
-  IF success;
-}
-
-TASK alert {
-  RUN "send_alert.sh";
-  AFTER analyze;
-  IF success;
-}
-```
-
----
-
-## Error Detection
-
-The compiler catches these errors automatically:
-
-### Syntax Error — missing semicolon
-```
-TASK test {
-  RUN "script.sh"       ← missing ;
-  EVERY DAY AT 06:00;
-}
-```
-```
-Line 2: syntax error
+TaskLang++/
+├── examples/
+│   ├── error_examples/
+│   │   ├── circular_deps.task     # Circular dependency example
+│   │   ├── duplicate_task.task    # Duplicate task definition
+│   │   ├── invalid_syntax.task    # Missing semicolons, bad syntax
+│   │   ├── type_error.task        # RUN given a number, not string
+│   │   └── undefined_task.task    # AFTER references non-existent task
+│   ├── complex.task               # Complex multi-task scenario
+│   ├── conditions.task            # Conditional execution demo
+│   ├── simple_daily.task          # Basic daily schedule
+│   └── workflow.task              # Multi-task dependency workflow
+├── src/
+│   ├── ast.c                      # AST node creation and management
+│   ├── ast.h                      # AST struct definitions
+│   ├── executor.c                 # Task execution engine
+│   ├── executor.h                 # Executor function declarations
+│   ├── lexer.l                    # Flex lexer specification
+│   ├── main.c                     # Entry point – ties all phases together
+│   ├── parser.y                   # Bison parser grammar
+│   ├── semantic.c                 # Semantic analysis and validation
+│   └── semantic.h                 # Semantic function declarations
+├── .gitignore
+├── build.sh                       # Linux/WSL build script
+├── Makefile                       # Makefile for building the compiler
+└── README.md                      # This file
 ```
 
 ---
 
-### Circular Dependency
-```
-TASK taskA { RUN "a.sh"; AFTER taskC; }
-TASK taskB { RUN "b.sh"; AFTER taskA; }
-TASK taskC { RUN "c.sh"; AFTER taskB; }
-```
-```
-Semantic error: Circular dependency detected: taskA -> taskB -> taskC -> taskA
+## Building the Project
+
+### Prerequisites
+
+| Tool           | Purpose                    |
+|----------------|----------------------------|
+| `gcc`          | C compiler                 |
+| `flex`         | Lexer generator (Lex)      |
+| `bison`        | Parser generator (Yacc)    |
+| `make`         | Build automation           |
+
+### Build (Linux / WSL)
+
+```bash
+chmod +x build.sh
+./build.sh
 ```
 
----
+Or with Make:
 
-### Undefined Task Reference
-```
-TASK test {
-  RUN "test.sh";
-  AFTER nonexistent;    ← task does not exist
-}
-```
-```
-Semantic error: Task 'nonexistent' is not defined
+```bash
+make
 ```
 
----
+### Run
 
-### Duplicate Task Name
-```
-TASK backup { RUN "backup.sh"; EVERY DAY AT 02:00; }
-TASK backup { RUN "backup2.sh"; EVERY DAY AT 03:00; }
-```
-```
-Semantic error: Task 'backup' is already defined
+```bash
+./tasklang examples/simple_daily.task
+./tasklang examples/workflow.task
+./tasklang examples/error_examples/circular_deps.task
 ```
 
 ---
 
-### Type Error — number instead of string
-```
-TASK test {
-  RUN 123;              ← must be a string
-  EVERY DAY AT 06:00;
-}
-```
-```
-Semantic error: RUN argument must be a string literal, not a number
-```
+## Semantic Validations
+
+| Check                     | Description                                                  |
+|---------------------------|--------------------------------------------------------------|
+| Duplicate task names      | Error if two tasks share the same name                       |
+| Undefined task references | Error if `AFTER` references a task that doesn't exist        |
+| Type checking             | Error if `RUN` receives a number instead of a string         |
+| Circular dependencies     | DFS-based cycle detection in the task dependency graph       |
 
 ---
 
-## Grammar (EBNF)
+## Assignment Details
 
-```
-program         = { task_definition } ;
-task_definition = "TASK" identifier "{" task_body "}" ;
-task_body       = run_statement schedule_spec [ condition_spec ] ;
-run_statement   = "RUN" string_literal ";" ;
-schedule_spec   = daily_schedule | weekly_schedule
-                | timed_schedule | after_schedule ;
-daily_schedule  = "EVERY" "DAY" "AT" time ";" ;
-weekly_schedule = "EVERY" "WEEK" "ON" weekday "AT" time ";" ;
-timed_schedule  = "AT" time ";" ;
-after_schedule  = "AFTER" identifier ";" ;
-condition_spec  = "IF" "success" ";" ;
-time            = digit digit ":" digit digit ;
-weekday         = "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY"
-                | "FRIDAY" | "SATURDAY" | "SUNDAY" ;
-identifier      = letter { letter | digit | "_" } ;
-string_literal  = '"' { character } '"' ;
-```
+- **Course**: SE2052 – Programming Paradigms
+- **Program**: BSc (Hons) in Computer Science – Year 2, Semester 2
+- **Student**: IT24103532 – H.S.S Udayaratna
+- **Deadline**: 04-05-2026
 
 ---
 
-## Tokens
-
-| Token | Lexeme | Description |
-|-------|--------|-------------|
-| `TASK` | `TASK` | Begins a task definition |
-| `RUN` | `RUN` | Specifies command to execute |
-| `EVERY` | `EVERY` | Recurring schedule keyword |
-| `DAY` | `DAY` | Used with EVERY for daily |
-| `WEEK` | `WEEK` | Used with EVERY for weekly |
-| `ON` | `ON` | Day specifier for weekly |
-| `AT` | `AT` | Time specification |
-| `AFTER` | `AFTER` | Dependency specification |
-| `IF` | `IF` | Conditional execution |
-| `SUCCESS` | `success` | Condition keyword |
-| `IDENTIFIER` | `[a-zA-Z][a-zA-Z0-9_]*` | Task name |
-| `STRING_LITERAL` | `"..."` | Script path |
-| `TIME` | `HH:MM` | Time value |
-| `WEEKDAY` | `MONDAY`..`SUNDAY` | Day of week |
-| `LBRACE` | `{` | Block open |
-| `RBRACE` | `}` | Block close |
-| `SEMICOLON` | `;` | Statement end |
-
----
-
-## Semantic Validation
-
-| Check | Description |
-|-------|-------------|
-| Duplicate names | No two tasks can have the same name |
-| Undefined references | AFTER must reference an existing task |
-| Circular dependencies | Detected using depth-first search (DFS) |
-| Type checking | RUN argument must be a string, not a number |
-
----
-
-## Architecture Overview
-
-| Component | File | Role |
-|-----------|------|------|
-| Lexer | `src/lexer.l` | Tokenizes input text |
-| Parser | `src/parser.y` | Validates grammar, builds AST |
-| AST | `src/ast.c/h` | Stores task data structures |
-| Semantic | `src/semantic.c/h` | Checks logic errors |
-| Executor | `src/executor.c/h` | Prints execution output |
-| Entry point | `src/main.c` | Ties all phases together |
-
----
-
-## Limitations
-
-- No actual script execution — simulation only
-- Only `success` condition supported
-- No task parameters or environment variables
-- No retry or timeout support
-
----
-
-*Created by H.S.S Udayaratna — IT24103532 — SLIIT — 2026*
+*Last Updated: May 2026 | Version 1.0*
