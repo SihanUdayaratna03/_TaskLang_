@@ -4,6 +4,7 @@
 #include "ast.h"
 
 extern int yylex();
+extern int line_number;
 void yyerror(const char *s);
 
 TaskList *root_list = NULL;
@@ -56,5 +57,5 @@ condition_spec:
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
+    fprintf(stderr, "Syntax Error at line %d: %s\n", line_number, s);
 }
