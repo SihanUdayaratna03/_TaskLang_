@@ -1,0 +1,23 @@
+# Compiled output
+*.exe
+*.out
+tasklang
+
+# Generated Lex/Yacc files
+src/lex.yy.c
+src/y.tab.c
+src/y.tab.h
+src/parser.output
+
+# Object files and build artifacts
+*.o
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+*.swp
+*.swo
