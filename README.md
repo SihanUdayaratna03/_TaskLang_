@@ -300,13 +300,3 @@ make
 
 ---
 
-## Assignment Details
-
-- **Course**: SE2052 – Programming Paradigms
-- **Program**: BSc (Hons) in Computer Science – Year 2, Semester 2
-- **Student**: IT24103532 – H.S.S Udayaratna
-- **Deadline**: 04-05-2026
-
----
-
-*Last Updated: May 2026 | Version 1.0*
