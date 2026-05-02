@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "ast.h"
 
 TaskList* create_task_list() {
@@ -28,5 +29,37 @@ void append_task(TaskList *list, Task *task) {
     } else {
         list->tail->next = task;
         list->tail = task;
+    }
+}
+
+void print_task_list(TaskList *list) {
+    if (!list) return;
+    printf("\n--- ABSTRACT SYNTAX TREE ---\n");
+    Task *curr = list->head;
+    while (curr) {
+        printf("TASK: %s\n", curr->name ? curr->name : "NULL");
+        printf("  RUN: %s\n", curr->script ? curr->script : "NULL");
+        
+        switch (curr->schedule.type) {
+            case SCHED_DAILY:
+                printf("  EVERY DAY AT %s\n", curr->schedule.time);
+                break;
+            case SCHED_WEEKLY:
+                printf("  EVERY WEEK ON %s AT %s\n", curr->schedule.weekday, curr->schedule.time);
+                break;
+            case SCHED_TIMED:
+                printf("  AT %s\n", curr->schedule.time);
+                break;
+            case SCHED_AFTER:
+                printf("  AFTER %s\n", curr->schedule.depends_on);
+                break;
+        }
+        
+        if (curr->has_condition) {
+            printf("  CONDITION: IF success\n");
+        }
+        
+        printf("----------------------------\n");
+        curr = curr->next;
     }
 }

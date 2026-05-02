@@ -31,5 +31,6 @@ typedef struct {
 TaskList* create_task_list();
 void append_task(TaskList *list, Task *task);
 Task* create_task(char *name);
+void print_task_list(TaskList *list);
 
 #endif

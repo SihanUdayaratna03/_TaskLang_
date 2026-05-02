@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
     printf("Starting parser...\n");
     if (yyparse() == 0) {
         printf("Parsing successful!\n");
+        print_task_list(root_list);
     } else {
         printf("Parsing failed.\n");
     }
