@@ -2,6 +2,7 @@
 #include "ast.h"
 #include "y.tab.h"
 #include "semantic.h"
+#include "executor.h"
 
 extern FILE* yyin;
 extern int yyparse();
@@ -28,7 +29,7 @@ int main(int argc, char **argv) {
     }
 
     printf("Semantic Analysis Passed.\n");
-    print_task_list(root_list);
+    execute_plan(root_list);
 
     if (argc > 1) {
         fclose(yyin);
