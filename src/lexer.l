@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ast.h"
 #include "y.tab.h"
 
 int line_number = 1;
@@ -38,10 +39,6 @@ WHITESPACE  [ \t]
 "}"         { return RBRACE; }
 ";"         { return SEMICOLON; }
 
-{IDENTIFIER}    { yylval.string = strdup(yytext); return IDENTIFIER; }
-{STRING}        { char *str = malloc(strlen(yytext)-1); strncpy(str, yytext+1, strlen(yytext)-2); str[strlen(yytext)-2]='\0'; yylval.string = str; return STRING_LITERAL; }
-{TIME}          { yylval.string = strdup(yytext); return TIME; }
-
 "MONDAY"        { yylval.string = strdup(yytext); return WEEKDAY; }
 "TUESDAY"       { yylval.string = strdup(yytext); return WEEKDAY; }
 "WEDNESDAY"     { yylval.string = strdup(yytext); return WEEKDAY; }
@@ -49,6 +46,10 @@ WHITESPACE  [ \t]
 "FRIDAY"        { yylval.string = strdup(yytext); return WEEKDAY; }
 "SATURDAY"      { yylval.string = strdup(yytext); return WEEKDAY; }
 "SUNDAY"        { yylval.string = strdup(yytext); return WEEKDAY; }
+
+{IDENTIFIER}    { yylval.string = strdup(yytext); return IDENTIFIER; }
+{STRING}        { char *str = malloc(strlen(yytext)-1); strncpy(str, yytext+1, strlen(yytext)-2); str[strlen(yytext)-2]='\0'; yylval.string = str; return STRING_LITERAL; }
+{TIME}          { yylval.string = strdup(yytext); return TIME; }
 
 .               { fprintf(stderr, "Lexical Error at line %d: Unrecognized character '%c'\n", line_number, yytext[0]); exit(1); }
 

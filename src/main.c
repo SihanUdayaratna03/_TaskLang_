@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "y.tab.h"
 #include "ast.h"
+#include "y.tab.h"
 
 extern FILE* yyin;
 extern int yyparse();
