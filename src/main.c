@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "ast.h"
 #include "y.tab.h"
+#include "semantic.h"
 
 extern FILE* yyin;
 extern int yyparse();
@@ -16,13 +17,18 @@ int main(int argc, char **argv) {
         yyin = file;
     }
 
-    printf("Starting parser...\n");
-    if (yyparse() == 0) {
-        printf("Parsing successful!\n");
-        print_task_list(root_list);
-    } else {
+    printf("Parsing TaskLang++ input...\n");
+    if (yyparse() != 0) {
         printf("Parsing failed.\n");
+        return 1;
     }
+
+    if (run_semantic_analysis(root_list) != 0) {
+        return 1;
+    }
+
+    printf("Semantic Analysis Passed.\n");
+    print_task_list(root_list);
 
     if (argc > 1) {
         fclose(yyin);
