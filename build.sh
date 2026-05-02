@@ -4,7 +4,7 @@ set -e
 TARGET="tasklang"
 
 echo "=================================================="
-echo "   Building TaskLang++ Compiler"
+echo "   Welcome Building TaskLang++ Compiler"
 echo "=================================================="
 
 echo ""
