@@ -19,6 +19,26 @@ int check_duplicate_tasks(TaskList *list) {
 }
 
 int check_undefined_tasks(TaskList *list) {
+    Task *curr = list->head;
+    while (curr) {
+        if (curr->schedule.type == SCHED_AFTER && curr->schedule.depends_on) {
+            int found = 0;
+            Task *search = list->head;
+            while (search) {
+                if (search->name && strcmp(search->name, curr->schedule.depends_on) == 0) {
+                    found = 1;
+                    break;
+                }
+                search = search->next;
+            }
+            if (!found) {
+                fprintf(stderr, "Semantic Error: Task '%s' references undefined task '%s'.\n",
+                        curr->name, curr->schedule.depends_on);
+                return 1;
+            }
+        }
+        curr = curr->next;
+    }
     return 0;
 }
 
