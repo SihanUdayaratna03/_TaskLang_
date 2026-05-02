@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include "y.tab.h"
+#include "ast.h"
 
-extern int yylex();
-extern char* yytext;
 extern FILE* yyin;
+extern int yyparse();
+extern TaskList *root_list;
 
 int main(int argc, char **argv) {
     if (argc > 1) {
@@ -15,9 +16,11 @@ int main(int argc, char **argv) {
         yyin = file;
     }
 
-    int token;
-    while ((token = yylex())) {
-        printf("Token: %d, Lexeme: %s\n", token, yytext);
+    printf("Starting parser...\n");
+    if (yyparse() == 0) {
+        printf("Parsing successful!\n");
+    } else {
+        printf("Parsing failed.\n");
     }
 
     if (argc > 1) {
