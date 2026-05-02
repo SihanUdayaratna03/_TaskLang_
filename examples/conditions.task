@@ -1,0 +1,10 @@
+TASK fetchData {
+  RUN "fetch.sh";
+  EVERY DAY AT 05:00;
+}
+
+TASK processData {
+  RUN "process.py";
+  AFTER fetchData;
+  IF success;
+}
