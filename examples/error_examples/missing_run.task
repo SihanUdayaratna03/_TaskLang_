@@ -1,0 +1,3 @@
+TASK incomplete {
+  EVERY DAY AT 10:00;
+}
