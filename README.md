@@ -153,6 +153,8 @@ letter          = "a" | ... | "z" | "A" | ... | "Z" ;
   └─────────────┘
 ```
 
+![TaskLang++ Compiler Flow](assets/tasklang_flow.svg)
+
 ---
 
 ## Example Programs
