@@ -119,39 +119,7 @@ letter          = "a" | ... | "z" | "A" | ... | "Z" ;
 
 ## Compiler Architecture
 
-```
-  .task Source File
-        │
-        ▼
-  ┌─────────────┐
-  │  Lexer      │  lexer.l   — Tokenizes input using Flex regular expressions
-  │  (Flex)     │
-  └──────┬──────┘
-         │  token stream
-         ▼
-  ┌─────────────┐
-  │  Parser     │  parser.y  — Validates grammar using Bison LALR(1) parsing
-  │  (Bison)    │
-  └──────┬──────┘
-         │  parse tree
-         ▼
-  ┌─────────────┐
-  │  AST        │  ast.c/h   — Builds structured in-memory tree of the program
-  │  Builder    │
-  └──────┬──────┘
-         │  AST
-         ▼
-  ┌─────────────┐
-  │  Semantic   │  semantic.c/h — Validates logic: duplicates, undefined refs,
-  │  Validator  │                 type errors, circular dependencies
-  └──────┬──────┘
-         │  validated AST
-         ▼
-  ┌─────────────┐
-  │  Execution  │  executor.c/h — Resolves dependencies and prints execution plan
-  │  Engine     │
-  └─────────────┘
-```
+![Compiler Architecture](assets/tasklang_flow.svg)
 
 ---
 
