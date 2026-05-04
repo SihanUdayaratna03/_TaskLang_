@@ -146,6 +146,7 @@ TASK dailyReport {
 ```
 
 **Output:**
+
 <br/>
 ![Simple Daily Task Output](assets/daily_output.png)
 
@@ -170,6 +171,7 @@ TASK cleanup {
 ```
 
 **Output:**
+
 <br/>
 ![Multi-Step Workflow Output](assets/workflow_output.png)
 
