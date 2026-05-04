@@ -17,6 +17,20 @@ Modern systems rely heavily on task scheduling — from CI/CD pipelines and cron
 
 ---
 
+## ✨ Key Technical Highlights
+
+This project stands out by moving beyond basic parsing to implement comprehensive compiler logic:
+
+- **LALR(1) Parsing Engine**: Uses Bison to enforce strict, unambiguous grammar validation.
+- **Deep Semantic Analysis**: Goes beyond syntax to catch logical flaws before execution.
+  - Graph traversal using **Depth-First Search (DFS)** to detect and reject circular dependencies (`taskA -> taskB -> taskA`).
+  - Strict reference validation to guarantee `AFTER` clauses point to existing tasks.
+  - Duplicate identifier detection to maintain a clean namespace.
+- **Topological Sorting Engine**: The executor uses graph algorithms to mathematically sort tasks, ensuring dependencies are perfectly resolved before any execution begins.
+- **Robust Error Handling**: Generates precise, line-accurate errors for lexical, syntax, and semantic failures.
+
+---
+
 ## DSL Scope
 
 ### Supported Task Types
@@ -270,3 +284,12 @@ make
 
 ---
 
+## 🚀 Future Extensions
+
+While fully functional within its defined scope, TaskLang++ lays the groundwork for several advanced features:
+- **Symbol Table Implementation**: Upgrading O(N) linear scans to an O(1) Hash Map for scalable compilation of massive task files.
+- **Variables & Parameters**: Allowing string interpolation (`RUN "script.sh --user ${user}"`) within tasks.
+- **Real Execution Backend**: Hooking the Topological Sorting Engine directly into `cron`, `systemd`, or `schtasks` to actually execute the compiled job plans on the host OS.
+- **Language Server Protocol (LSP)**: Providing IDE support (syntax highlighting, inline errors) for `.task` files.
+
+---
