@@ -1,9 +1,4 @@
 TASK badScript {
-  RUN "valid.sh";
-  AT 10:00;
-}
-
-TASK anotherTask {
-  RUN "another.sh";
-  EVERY DAY AT 11:00;
+  RUN 42;
+  EVERY DAY AT 10:00;
 }
