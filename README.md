@@ -2,9 +2,6 @@
 
 **A Domain-Specific Language (DSL) for Task Scheduling and Automation**
 
-*SE2052 – Programming Paradigms | Y2 S2 – BSc (Hons) in Computer Science*
-*Student: IT24103532 – H.S.S Udayaratna*
-
 ---
 
 ## Overview
@@ -149,17 +146,8 @@ TASK dailyReport {
 ```
 
 **Output:**
-```
-Parsing TaskLang++ input...
-
---- EXECUTION START ---
-
-Executing Task: dailyReport
-  Script: "report.py"
-  Schedule: EVERY DAY AT 06:00
-
---- EXECUTION COMPLETE ---
-```
+<br/>
+![Simple Daily Task Output](assets/daily_output.png)
 
 ### 2. Multi-Step Workflow with Dependencies
 
@@ -182,27 +170,14 @@ TASK cleanup {
 ```
 
 **Output:**
-```
-Parsing TaskLang++ input...
+<br/>
+![Multi-Step Workflow Output](assets/workflow_output.png)
 
---- EXECUTION START ---
+### 3. Complex Pipeline Execution
 
-Executing Task: backupDB
-  Script: "backup.sh"
-  Schedule: EVERY DAY AT 02:00
+For more advanced scenarios with multiple chained tasks, the topological sorting engine mathematically guarantees the precise order of execution across the dependency graph:
 
-Executing Task: sendReport
-  Script: "report.py"
-  Schedule:
-  Depends on: backupDB
-  Condition: success
-
-Executing Task: cleanup
-  Script: "cleanup.sh"
-  Schedule: EVERY WEEK ON SUNDAY AT 03:00
-
---- EXECUTION COMPLETE ---
-```
+![Complex Workflow Output](assets/complex_output.png)
 
 ---
 
@@ -293,3 +268,7 @@ While fully functional within its defined scope, TaskLang++ lays the groundwork 
 - **Language Server Protocol (LSP)**: Providing IDE support (syntax highlighting, inline errors) for `.task` files.
 
 ---
+## Author
+
+Udayaratna H.S.S
+Student ID : IT24103532
