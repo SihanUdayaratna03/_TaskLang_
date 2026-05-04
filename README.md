@@ -171,6 +171,7 @@ TASK dailyReport {
 Parsing TaskLang++ input...
 
 --- EXECUTION START ---
+
 Executing Task: dailyReport
   Script: "report.py"
   Schedule: EVERY DAY AT 06:00
@@ -203,6 +204,7 @@ TASK cleanup {
 Parsing TaskLang++ input...
 
 --- EXECUTION START ---
+
 Executing Task: backupDB
   Script: "backup.sh"
   Schedule: EVERY DAY AT 02:00
