@@ -28,7 +28,6 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    printf("Semantic Analysis Passed.\n");
     execute_plan(root_list);
 
     if (argc > 1) {
